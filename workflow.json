@@ -1,0 +1,362 @@
+{
+  "name": "Daily Job Search Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [-1264, -32],
+      "id": "ad9c0d9d-1d8a-4e80-9f68-9b65132b80a7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search?query=Financial+Analyst+in+Dallas+TX&page=1&num_pages=1&num_results=5",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-704, -496],
+      "id": "581ee56c-527a-405e-a1c7-940cbf72c212",
+      "name": "HTTP Request4 - Financial Analyst"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search?query=Staff+Accountant+in+Dallas+TX&page=1&num_pages=1&num_results=5",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-704, -272],
+      "id": "ed5c5295-ade9-4f22-b2cb-609ce100408c",
+      "name": "HTTP Request - Staff Accountant"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search?query=FPA+Analyst+remote&page=1&num_pages=1&num_results=5",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-704, -80],
+      "id": "e6e52c41-cd4e-439e-928a-0d9856d770b2",
+      "name": "HTTP Request1 - FPA Analyst"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search?query=Accounting+Analyst+in+Dallas+TX&page=1&num_pages=1&num_results=5",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-704, 112],
+      "id": "4ba1ad52-6666-4a74-b08e-1bc2019830a5",
+      "name": "HTTP Request2 - Accounting Analyst"
+    },
+    {
+      "parameters": {
+        "url": "https://jsearch.p.rapidapi.com/search?query=AML+Compliance+Analyst+remote&page=1&num_pages=1&num_results=5",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "YOUR_RAPIDAPI_KEY_HERE"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-704, 304],
+      "id": "f1eb8a4b-3f25-494c-ba83-8458e8c570ce",
+      "name": "HTTP Request3 - AML Compliance"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allJobs = [];\n\nfor (const item of $input.all()) {\n  const jobs = (item.json.data || []).slice(0, 2);\n  for (const job of jobs) {\n    allJobs.push({\n      json: {\n        jobTitle: job.job_title || '',\n        company: job.employer_name || '',\n        location: (job.job_city || '') + ', ' + (job.job_state || ''),\n        descriptionText: (job.job_description || '').substring(0, 2000),\n        jobUrl: job.job_apply_link || job.job_google_link || ''\n      }\n    });\n  }\n}\n\nif (allJobs.length === 0) {\n  return [{ json: { error: 'No jobs found today' } }];\n}\n\nreturn allJobs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-432, -80],
+      "id": "d06e0f93-de52-4a39-8261-e7ce7a718539",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [-192, 0],
+      "id": "d968cf1e-970d-4157-8ba1-3179d6fb8488",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "claude-haiku-4-5-20251001"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Is this job a good match for the candidate? Skills: Financial Analysis, GL Accounting, Reconciliation, FPA, Budgeting, AML/CFT, QuickBooks, Excel, CISA, MBA Finance, Green Card, Dallas TX.\n\nJob Title: {{ $json.jobTitle }}\nCompany: {{ $json.company }}\nDescription: {{ $json.descriptionText }}\n\nReply ONLY with this JSON, nothing else:\n{\"verdict\": \"true\", \"fit\": \"high\", \"reason\": \"one sentence\"}\nor\n{\"verdict\": \"false\", \"fit\": \"low\", \"reason\": \"one sentence\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [80, 80],
+      "id": "fcfa1889-159b-4137-bdfc-bfc823155a61",
+      "name": "Message a model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "YOUR_ANTHROPIC_CREDENTIAL_ID",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let text = '';\n\ntry {\n  const content = $input.item.json.content;\n  if (content && content[0] && content[0].text) {\n    text = content[0].text;\n  } else if ($input.item.json.text) {\n    text = $input.item.json.text;\n  } else if (typeof $input.item.json === 'string') {\n    text = $input.item.json;\n  }\n} catch(e) {\n  text = '';\n}\n\nlet verdict = 'false';\nlet fit = 'low';\nlet reason = '';\n\ntry {\n  const match = text.match(/\\{[^}]+\\}/);\n  if (match) {\n    const parsed = JSON.parse(match[0]);\n    verdict = parsed.verdict || 'false';\n    fit = parsed.fit || 'low';\n    reason = parsed.reason || '';\n  }\n} catch(e) {\n  reason = 'Parse error';\n}\n\nconst jobNode = $('Code in JavaScript').item.json;\n\nreturn {\n  json: {\n    verdict,\n    fit,\n    reason,\n    jobTitle: jobNode.jobTitle || '',\n    company: jobNode.company || '',\n    location: jobNode.location || '',\n    jobUrl: jobNode.jobUrl || '',\n    date: new Date().toISOString().split('T')[0]\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [128, -208],
+      "id": "6dab3149-6e91-4d38-a622-4b5037238340",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ba4c5e83-6413-4975-8e6c-f20e696fbada",
+              "leftValue": "={{ $json.verdict }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [368, -96],
+      "id": "cacb73ba-b904-414d-8b64-53346ea3b3ec",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [656, 112],
+      "id": "71189c9d-1f1d-4092-9ae7-c070c6a6a68d",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Job Search Tracker",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL_HERE"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL_HERE"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [656, -256],
+      "id": "5de368e3-301d-4ee9-863e-96e4a1e28411",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL_HERE",
+        "subject": "=Job Match: {{ $json.jobTitle }} at {{ $json.company }}",
+        "message": "=Role: {{ $json.jobTitle }}\nCompany: {{ $json.company }}\nLocation: {{ $json.location }}\nFit: {{ $json.fit }}\nWhy: {{ $json.reason }}\nApply: {{ $json.jobUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [1024, -112],
+      "id": "547ba1cf-5e65-48e1-8b51-d22f4a0ad9b6",
+      "name": "Send a message",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {"node": "HTTP Request4 - Financial Analyst", "type": "main", "index": 0},
+          {"node": "HTTP Request - Staff Accountant", "type": "main", "index": 0},
+          {"node": "HTTP Request1 - FPA Analyst", "type": "main", "index": 0},
+          {"node": "HTTP Request2 - Accounting Analyst", "type": "main", "index": 0},
+          {"node": "HTTP Request3 - AML Compliance", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "HTTP Request4 - Financial Analyst": {
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
+    },
+    "HTTP Request - Staff Accountant": {
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
+    },
+    "HTTP Request1 - FPA Analyst": {
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
+    },
+    "HTTP Request2 - Accounting Analyst": {
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
+    },
+    "HTTP Request3 - AML Compliance": {
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
+    },
+    "Code in JavaScript": {
+      "main": [[{"node": "Loop Over Items", "type": "main", "index": 0}]]
+    },
+    "Loop Over Items": {
+      "main": [
+        [{"node": "Code in JavaScript1", "type": "main", "index": 0}],
+        [{"node": "Message a model", "type": "main", "index": 0}]
+      ]
+    },
+    "Message a model": {
+      "main": [[{"node": "Loop Over Items", "type": "main", "index": 0}]]
+    },
+    "Code in JavaScript1": {
+      "main": [[{"node": "If", "type": "main", "index": 0}]]
+    },
+    "If": {
+      "main": [
+        [{"node": "Append row in sheet", "type": "main", "index": 0}],
+        [{"node": "No Operation, do nothing", "type": "main", "index": 0}]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [[{"node": "Send a message", "type": "main", "index": 0}]]
+    },
+    "No Operation, do nothing": {
+      "main": [[]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
